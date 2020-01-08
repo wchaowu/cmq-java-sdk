@@ -20,7 +20,7 @@ public class CMQTool {
 			'4', '5', '6', '7', '8', '9', '+', '/' };
 
     private static final String CONTENT_CHARSET = "UTF-8";
-
+	private static final int noMessage = 7000;
     private static final String HMAC_ALGORITHM = "HmacSHA1";
     private static final String HMAC_SHA256_ALGORITHM = "HmacSHA256";
 
@@ -90,7 +90,7 @@ public class CMQTool {
 			throw new CMQServerException(0, "can't find field code in result:" + jsonObj.toString());
 		}
 		int code = jsonObj.getInt("code");
-		if (code != 0) {
+		if (code != 0 && code != noMessage) {
 			log.error("error response:" + jsonObj.toString());
 			throw new CMQServerException(code, jsonObj.getString("message"));
 		}

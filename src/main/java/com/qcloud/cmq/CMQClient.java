@@ -2,6 +2,9 @@ package com.qcloud.cmq;
 
 import com.qcloud.cmq.entity.ActionProperties;
 import com.qcloud.cmq.entity.CmqConfig;
+import com.qcloud.cmq.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URLEncoder;
 import java.util.Random;
@@ -12,6 +15,8 @@ public class CMQClient {
     protected String CURRENT_VERSION = "SDK_JAVA_1.3";
 
     protected CmqConfig cmqConfig;
+    private static final Logger log = LoggerFactory.getLogger(CMQClient.class);
+    private static final int noMessage = 7000;
 
     public CMQClient(CmqConfig cmqConfig) {
         this.cmqConfig = cmqConfig;
@@ -100,6 +105,12 @@ public class CMQClient {
             rsp = HttpUtil.request(url, req, cmqConfig, actionProperties);
         }else {
             rsp = HttpUtil.request(url, req, cmqConfig, new ActionProperties());
+        }
+        JSONObject jsonObj = new JSONObject(rsp);
+        if (!jsonObj.isNull("code")) {
+            if (jsonObj.getInt("code") != 0 &&  jsonObj.getInt("code") != noMessage) {
+                log.error("url {} req {} cmqConfig{} {} ", url, req, cmqConfig.getSecretId(), cmqConfig.getSecretKey());
+            }
         }
         return rsp;
     }

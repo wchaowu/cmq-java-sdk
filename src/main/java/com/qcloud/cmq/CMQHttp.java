@@ -1,5 +1,8 @@
 package com.qcloud.cmq;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -14,11 +17,14 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
 
+import static jdk.nashorn.internal.runtime.regexp.joni.Config.log;
+
 public class CMQHttp {
 	private  int timeout ;
 	private  boolean isKeepAlive;
     private URLConnection connection;
-    private String url ;	
+    private String url ;
+	private static final Logger log = LoggerFactory.getLogger(CMQHttp.class);
 
     public CMQHttp()
     {
@@ -75,10 +81,18 @@ public class CMQHttp {
 	
 				this.connection.setDoOutput(true);
 				this.connection.setDoInput(true);
-				DataOutputStream out = new DataOutputStream(this.connection.getOutputStream());
+				DataOutputStream out  = null;
+				try{
+					out = new DataOutputStream(this.connection.getOutputStream());
 				out.writeBytes(req);
 				out.flush();
+				}catch(Exception e){
+					log.error("url:{} req {}",url,req);
+				}finally{
+					if(out !=null){
 				out.close();
+			}
+				}
 			}
 
 			this.connection.connect();
