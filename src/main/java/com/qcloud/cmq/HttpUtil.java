@@ -87,7 +87,7 @@ public class HttpUtil {
             }
         } catch (Exception e) {
             long duration = System.currentTimeMillis() - start;
-            log.error("request fail ,exec time: {}", duration, e);
+            log.error("request fail ,exec time: {} config{},request{}", duration,cmqConfig,request.toString(), e);
             throw e;
         }
         return result;
